@@ -6,14 +6,39 @@ import { HealthBar } from "../ui/HealthBar";
 import { WaveManager } from "../systems/WaveManager";
 import { DebugHUD } from "../ui/DebugHUD";
 
+import { ExperienceOrb } from "../entities/ExperienceOrb";
+
 export class Game extends Scene {
   private player!: Player;
   private healthBar!: HealthBar;
   private waveManager!: WaveManager;
+  private experienceOrbs: ExperienceOrb[] = [];
 
   private debugHUD!: DebugHUD;
 
   private projectiles: Projectile[] = [];
+
+  private handleExperienceOrbCollisions(): void {
+    for (const orb of this.experienceOrbs) {
+      if (!orb.isActive()) {
+        continue;
+      }
+
+      const isColliding = Geom.Intersects.RectangleToRectangle(
+        this.player.getBounds(),
+        orb.getBounds(),
+      );
+
+      if (isColliding) {
+        this.player.gainXp(orb.getXpValue());
+        orb.collect();
+      }
+    }
+  }
+
+  private removeInactiveExperienceOrbs(): void {
+    this.experienceOrbs = this.experienceOrbs.filter((orb) => orb.isActive());
+  }
 
   constructor() {
     super("Game");
@@ -47,6 +72,8 @@ export class Game extends Scene {
     this.handleProjectileCollisions();
     this.handlePlayerCollisions();
     this.removeInactiveProjectiles();
+    this.handleExperienceOrbCollisions();
+    this.removeInactiveExperienceOrbs();
 
     this.healthBar.update(this.player.getHealth(), this.player.getMaxHealth());
 
@@ -76,7 +103,14 @@ export class Game extends Scene {
           projectile.destroy();
 
           if (wasAlive && enemy.isDead()) {
-            this.player.gainXp(enemy.getXpReward());
+            this.experienceOrbs.push(
+              new ExperienceOrb(
+                this,
+                enemy.getX(),
+                enemy.getY(),
+                enemy.getXpReward(),
+              ),
+            );
           }
 
           break;
@@ -111,4 +145,5 @@ export class Game extends Scene {
       projectile.isActive(),
     );
   }
+
 }
