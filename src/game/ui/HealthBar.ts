@@ -11,11 +11,11 @@ export class HealthBar {
 
   constructor(scene: Scene) {
     scene.add
-      .rectangle(20, 30, this.barWidth, this.barHeight, 0x000000)
+      .rectangle(800, 30, this.barWidth, this.barHeight, 0x000000)
       .setOrigin(0, 0.5);
     this.fill = scene.add
       .rectangle(
-        20,
+        800,
         30,
         this.fillWidth,
         this.barHeight - this.padding * 2,
