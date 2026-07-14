@@ -1,13 +1,10 @@
-import {
-  Input,
-  Math as PhaserMath,
-  Scene,
-} from "phaser";
+import { Input, Math as PhaserMath, Scene } from "phaser";
 
+import { BasicWeapon } from "../weapons/BasicWeapon";
+import { Projectile } from "./Projectile";
 import { Entity } from "./Entity";
 
 export class Player extends Entity {
-
   private readonly teclaD: Input.Keyboard.Key;
   private readonly teclaA: Input.Keyboard.Key;
   private readonly teclaW: Input.Keyboard.Key;
@@ -15,6 +12,8 @@ export class Player extends Entity {
 
   private readonly teclaSpace: Input.Keyboard.Key;
   private readonly teclaF: Input.Keyboard.Key;
+
+  private readonly weapon: BasicWeapon;
 
   private readonly diagonalMultiplier = 1 / Math.sqrt(2);
 
@@ -24,18 +23,7 @@ export class Player extends Entity {
   private invulnerable = false;
 
   constructor(scene: Scene) {
-
-    super(
-      scene,
-      512,
-      384,
-      64,
-      64,
-      0x00ff88,
-      100,
-      250,
-      10
-    );
+    super(scene, 512, 384, 64, 64, 0x00ff88, 100, 250, 10);
 
     if (!scene.input.keyboard) {
       throw new Error("Teclado indisponível.");
@@ -45,13 +33,15 @@ export class Player extends Entity {
     this.teclaA = scene.input.keyboard.addKey(Input.Keyboard.KeyCodes.A);
     this.teclaW = scene.input.keyboard.addKey(Input.Keyboard.KeyCodes.W);
     this.teclaS = scene.input.keyboard.addKey(Input.Keyboard.KeyCodes.S);
-
-    this.teclaSpace = scene.input.keyboard.addKey(Input.Keyboard.KeyCodes.SPACE);
+    this.teclaSpace = scene.input.keyboard.addKey(
+      Input.Keyboard.KeyCodes.SPACE,
+    );
     this.teclaF = scene.input.keyboard.addKey(Input.Keyboard.KeyCodes.F);
+
+    this.weapon = new BasicWeapon(scene);
   }
 
   update(delta: number): void {
-
     let directionX = 0;
     let directionY = 0;
 
@@ -85,7 +75,6 @@ export class Player extends Entity {
   }
 
   public override takeDamage(amount: number): void {
-
     if (this.invulnerable || this.isDead()) {
       return;
     }
@@ -96,12 +85,23 @@ export class Player extends Entity {
 
     this.body.setAlpha(0.4);
 
-    this.scene.time.delayedCall(
-      this.invulnerabilityDuration,
-      () => {
-        this.invulnerable = false;
-        this.body.setAlpha(1);
-      }
+    this.scene.time.delayedCall(this.invulnerabilityDuration, () => {
+      this.invulnerable = false;
+      this.body.setAlpha(1);
+    });
+  }
+
+  shoot(
+    targetX: number,
+    targetY: number,
+    currentTime: number,
+  ): Projectile | null {
+    return this.weapon.shoot(
+      this.getX(),
+      this.getY(),
+      targetX,
+      targetY,
+      currentTime,
     );
   }
 
@@ -110,7 +110,6 @@ export class Player extends Entity {
     sourceX: number,
     sourceY: number,
   ): void {
-
     if (this.invulnerable || this.isDead()) {
       return;
     }
@@ -131,7 +130,6 @@ export class Player extends Entity {
   }
 
   private applyScreenLimits(): void {
-
     const halfWidth = this.body.width / 2;
     const halfHeight = this.body.height / 2;
 
