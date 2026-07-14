@@ -70,8 +70,15 @@ export class Game extends Scene {
         );
 
         if (isColliding) {
+          const wasAlive = !enemy.isDead();
+
           enemy.takeDamage(projectile.getDamage());
           projectile.destroy();
+
+          if (wasAlive && enemy.isDead()) {
+            this.player.gainXp(enemy.getXpReward());
+          }
+
           break;
         }
       }

@@ -10,6 +10,10 @@ export class Player extends Entity {
   private readonly teclaW: Input.Keyboard.Key;
   private readonly teclaS: Input.Keyboard.Key;
 
+  private level = 1;
+  private currentXp = 0;
+  private xpToNextLevel = 100;
+
   private readonly teclaSpace: Input.Keyboard.Key;
   private readonly teclaF: Input.Keyboard.Key;
 
@@ -144,5 +148,34 @@ export class Player extends Entity {
       halfHeight,
       this.scene.scale.height - halfHeight,
     );
+  }
+
+  gainXp(amount: number): void {
+    if (amount <= 0) {
+      return;
+    }
+
+    this.currentXp += amount;
+    this.checkLevelUp();
+  }
+
+  private checkLevelUp(): void {
+    while (this.currentXp >= this.xpToNextLevel) {
+      this.currentXp -= this.xpToNextLevel;
+      this.level++;
+      this.xpToNextLevel = Math.floor(this.xpToNextLevel * 1.25);
+    }
+  }
+
+  getLevel(): number {
+    return this.level;
+  }
+
+  getCurrentXp(): number {
+    return this.currentXp;
+  }
+
+  getXpToNextLevel(): number {
+    return this.xpToNextLevel;
   }
 }

@@ -8,6 +8,9 @@ export class DebugHUD {
   private readonly waveText: GameObjects.Text;
   private readonly enemiesText: GameObjects.Text;
 
+  private readonly levelText: GameObjects.Text;
+  private readonly xpText: GameObjects.Text;
+
   constructor(
     scene: Scene,
     private readonly player: Player,
@@ -37,6 +40,16 @@ export class DebugHUD {
       fontSize: "14px",
       color: "#ffffff",
     });
+
+    this.levelText = scene.add.text(20, 110, "", {
+      fontSize: "14px",
+      color: "#ffffff",
+    });
+
+    this.xpText = scene.add.text(20, 130, "", {
+      fontSize: "14px",
+      color: "#ffffff",
+    });
   }
 
   update(): void {
@@ -48,12 +61,16 @@ export class DebugHUD {
       `Player Health: ${this.player.getHealth()}/${this.player.getMaxHealth()}`,
     );
 
-    this.waveText.setText(
-      `Wave: ${this.waveManager.getCurrentWave()}`,
-    );
+    this.waveText.setText(`Wave: ${this.waveManager.getCurrentWave()}`);
 
     this.enemiesText.setText(
       `Enemies: ${this.waveManager.getEnemies().length}`,
+    );
+
+    this.levelText.setText(`Level: ${this.player.getLevel()}`);
+
+    this.xpText.setText(
+      `XP: ${this.player.getCurrentXp()}/${this.player.getXpToNextLevel()}`,
     );
   }
 }
