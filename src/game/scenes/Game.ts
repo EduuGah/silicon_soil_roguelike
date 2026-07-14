@@ -69,6 +69,14 @@ export class Game extends Scene {
       projectile.update(delta);
     }
 
+    for (const orb of this.experienceOrbs) {
+      orb.update(delta, this.player.getX(), this.player.getY());
+    }
+
+    this.handleProjectileCollisions();
+    this.handlePlayerCollisions();
+    this.handleExperienceOrbCollisions();
+
     this.handleProjectileCollisions();
     this.handlePlayerCollisions();
     this.removeInactiveProjectiles();
@@ -145,5 +153,4 @@ export class Game extends Scene {
       projectile.isActive(),
     );
   }
-
 }
