@@ -1,4 +1,5 @@
 import { Geom, Input, Scene } from "phaser";
+
 import { Player } from "../entities/Player";
 import { Enemy } from "../entities/Enemy";
 import { Projectile } from "../entities/Projectile";
@@ -6,7 +7,7 @@ import { HealthBar } from "../ui/HealthBar";
 
 export class Game extends Scene {
   private player!: Player;
-  private enemy!: Enemy;
+  private enemies: Enemy[] = [];
   private healthBar!: HealthBar;
 
   private projectiles: Projectile[] = [];
@@ -15,17 +16,15 @@ export class Game extends Scene {
     super("Game");
   }
 
-  create() {
+  create(): void {
     this.player = new Player(this);
-    this.enemy = new Enemy(this, 150, 150);
+
+    this.enemies = [new Enemy(this, 150, 150), new Enemy(this, 300, 300)];
+
     this.healthBar = new HealthBar(this);
 
     this.input.on("pointerdown", (pointer: Input.Pointer) => {
-      const projectile = this.player.shoot(
-        pointer.x,
-        pointer.y,
-        this.time.now,
-      );
+      const projectile = this.player.shoot(pointer.x, pointer.y, this.time.now);
 
       if (projectile) {
         this.projectiles.push(projectile);
@@ -33,34 +32,84 @@ export class Game extends Scene {
     });
   }
 
-  update(_time: number, delta: number) {
+  update(_time: number, delta: number): void {
     this.player.update(delta);
-    this.enemy.update(delta, this.player);
+
+    for (const enemy of this.enemies) {
+      enemy.update(delta, this.player);
+    }
 
     for (const projectile of this.projectiles) {
       projectile.update(delta);
     }
 
-    this.projectiles = this.projectiles.filter(
-      (projectile) => projectile.isActive(),
-    );
+    this.handleProjectileCollisions();
+    this.handlePlayerCollisions();
+    this.removeInactiveProjectiles();
+    this.removeDeadEnemies();
 
-    const isColliding = Geom.Intersects.RectangleToRectangle(
-      this.player.getBounds(),
-      this.enemy.getBounds(),
-    );
+    this.healthBar.update(this.player.getHealth(), this.player.getMaxHealth());
+  }
 
-    if (isColliding) {
-      this.player.takeContactDamage(
-        this.enemy.getDamage(),
-        this.enemy.getX(),
-        this.enemy.getY(),
+  private handleProjectileCollisions(): void {
+    for (const projectile of this.projectiles) {
+      if (!projectile.isActive()) {
+        continue;
+      }
+
+      for (const enemy of this.enemies) {
+        if (enemy.isDead()) {
+          continue;
+        }
+
+        const isColliding = Geom.Intersects.RectangleToRectangle(
+          projectile.getBounds(),
+          enemy.getBounds(),
+        );
+
+        if (isColliding) {
+          enemy.takeDamage(projectile.getDamage());
+          projectile.destroy();
+          break;
+        }
+      }
+    }
+  }
+
+  private handlePlayerCollisions(): void {
+    for (const enemy of this.enemies) {
+      if (enemy.isDead()) {
+        continue;
+      }
+
+      const isColliding = Geom.Intersects.RectangleToRectangle(
+        this.player.getBounds(),
+        enemy.getBounds(),
       );
+
+      if (isColliding) {
+        this.player.takeContactDamage(
+          enemy.getDamage(),
+          enemy.getX(),
+          enemy.getY(),
+        );
+      }
+    }
+  }
+
+  private removeInactiveProjectiles(): void {
+    this.projectiles = this.projectiles.filter((projectile) =>
+      projectile.isActive(),
+    );
+  }
+
+  private removeDeadEnemies(): void {
+    for (const enemy of this.enemies) {
+      if (enemy.isDead()) {
+        enemy.destroy();
+      }
     }
 
-    this.healthBar.update(
-      this.player.getHealth(),
-      this.player.getMaxHealth(),
-    );
+    this.enemies = this.enemies.filter((enemy) => !enemy.isDead());
   }
 }

@@ -81,4 +81,8 @@ export abstract class Entity {
   public getHeight(): number {
     return this.body.height;
   }
+
+  destroy(): void {
+    this.body.destroy();
+  }
 }
