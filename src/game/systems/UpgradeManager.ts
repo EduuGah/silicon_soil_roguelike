@@ -4,12 +4,14 @@ import { Upgrade } from "../upgrades/Upgrade";
 import { IncreaseSpeedUpgrade } from "../upgrades/IncreaseSpeedUpgrade";
 import { IncreaseDamageUpgrade } from "../upgrades/IncreaseDamageUpgrade";
 import { IncreaseMaxHealthUpgrade } from "../upgrades/IncreaseMaxHealthUpgrade";
+import { ReduceWeaponCooldownUpgrade } from "../upgrades/ReduceWeaponCooldownUpgrade";
 
 export class UpgradeManager {
   private readonly upgrades: Upgrade[] = [
     new IncreaseSpeedUpgrade(),
     new IncreaseDamageUpgrade(),
     new IncreaseMaxHealthUpgrade(),
+    new ReduceWeaponCooldownUpgrade(),
   ];
 
   getRandomChoices(quantity: number): Upgrade[] {

@@ -13,6 +13,7 @@ export class DebugHUD {
 
   private readonly damageText: GameObjects.Text;
   private readonly speedText: GameObjects.Text;
+  private readonly cooldownText: GameObjects.Text;
 
   constructor(
     scene: Scene,
@@ -63,6 +64,11 @@ export class DebugHUD {
       fontSize: "14px",
       color: "#ffffff",
     });
+
+    this.cooldownText = scene.add.text(20, 190, "", {
+      fontSize: "14px",
+      color: "#ffffff",
+    });
   }
 
   update(): void {
@@ -88,5 +94,8 @@ export class DebugHUD {
 
     this.damageText.setText(`Damage: ${this.player.getWeaponDamage()}`);
     this.speedText.setText(`Speed: ${this.player.getSpeed()}`);
+    this.cooldownText.setText(
+      `Cooldown: ${Math.round(this.player.getWeaponCooldown())} ms`,
+    );
   }
 }

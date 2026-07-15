@@ -50,11 +50,13 @@ export class Game extends Scene {
         return;
       }
 
-      const projectile = this.player.shoot(pointer.x, pointer.y, this.time.now);
+      const newProjectiles = this.player.shoot(
+        pointer.x,
+        pointer.y,
+        this.time.now,
+      );
 
-      if (projectile) {
-        this.projectiles.push(projectile);
-      }
+      this.projectiles.push(...newProjectiles);
     });
   }
 

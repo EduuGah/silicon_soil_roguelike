@@ -105,11 +105,7 @@ export class Player extends Entity {
     });
   }
 
-  shoot(
-    targetX: number,
-    targetY: number,
-    currentTime: number,
-  ): Projectile | null {
+  shoot(targetX: number, targetY: number, currentTime: number): Projectile[] {
     return this.weapon.shoot(
       this.getX(),
       this.getY(),
@@ -117,6 +113,10 @@ export class Player extends Entity {
       targetY,
       currentTime,
     );
+  }
+
+  reduceWeaponCooldown(percentage: number): void {
+    this.weapon.reduceCooldownByPercentage(percentage);
   }
 
   public takeContactDamage(
@@ -202,6 +202,10 @@ export class Player extends Entity {
 
   getWeaponDamage(): number {
     return this.weapon.getDamage();
+  }
+
+  getWeaponCooldown(): number {
+    return this.weapon.getCooldown();
   }
 
   increaseSpeed(amount: number): void {

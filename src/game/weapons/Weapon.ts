@@ -18,5 +18,28 @@ export abstract class Weapon {
     targetX: number,
     targetY: number,
     currentTime: number,
-  ): Projectile | null;
+  ): Projectile[];
+
+  protected canShoot(currentTime: number): boolean {
+    const timeSinceLastShot = currentTime - this.lastShotTime;
+
+    if (timeSinceLastShot < this.cooldown) {
+      return false;
+    }
+
+    this.lastShotTime = currentTime;
+    return true;
+  }
+
+  reduceCooldownByPercentage(percentage: number): void {
+    if (percentage <= 0 || percentage >= 1) {
+      return;
+    }
+
+    this.cooldown = Math.max(80, this.cooldown * (1 - percentage));
+  }
+
+  getCooldown(): number {
+    return this.cooldown;
+  }
 }

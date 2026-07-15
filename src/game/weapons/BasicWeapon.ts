@@ -4,7 +4,7 @@ import { Weapon } from "./Weapon";
 
 export class BasicWeapon extends Weapon {
   constructor(scene: Scene) {
-    super(scene, 10, 30, 600, 700);
+    super(scene, 10, 300, 600, 700);
   }
 
   shoot(
@@ -13,16 +13,12 @@ export class BasicWeapon extends Weapon {
     targetX: number,
     targetY: number,
     currentTime: number,
-  ): Projectile | null {
-    const timeSinceLastShot = currentTime - this.lastShotTime;
-
-    if (timeSinceLastShot < this.cooldown) {
-      return null;
+  ): Projectile[] {
+    if (!this.canShoot(currentTime)) {
+      return [];
     }
 
-    this.lastShotTime = currentTime;
-
-    return new Projectile(
+    const projectile = new Projectile(
       this.scene,
       originX,
       originY,
@@ -32,6 +28,8 @@ export class BasicWeapon extends Weapon {
       this.damage,
       this.range,
     );
+
+    return [projectile];
   }
 
   getDamage(): number {
