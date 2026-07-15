@@ -5,7 +5,7 @@ export abstract class Entity {
   protected readonly scene: Scene;
 
   protected health: number;
-  protected readonly maxHealth: number;
+  protected maxHealth: number;
   protected speed: number;
   protected damage: number;
 

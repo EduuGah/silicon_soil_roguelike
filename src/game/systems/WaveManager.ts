@@ -12,7 +12,7 @@ export class WaveManager {
   startNextWave(): void {
     this.currentWave++;
 
-    const quantityEnemies = this.currentWave + 2;
+    const quantityEnemies = this.currentWave + 3;
 
     for (let index = 0; index < quantityEnemies; index++) {
       const position = this.generateSpawnPosition();

@@ -11,6 +11,9 @@ export class DebugHUD {
   private readonly levelText: GameObjects.Text;
   private readonly xpText: GameObjects.Text;
 
+  private readonly damageText: GameObjects.Text;
+  private readonly speedText: GameObjects.Text;
+
   constructor(
     scene: Scene,
     private readonly player: Player,
@@ -50,6 +53,16 @@ export class DebugHUD {
       fontSize: "14px",
       color: "#ffffff",
     });
+
+    this.damageText = scene.add.text(20, 150, "", {
+      fontSize: "14px",
+      color: "#ffffff",
+    });
+
+    this.speedText = scene.add.text(20, 170, "", {
+      fontSize: "14px",
+      color: "#ffffff",
+    });
   }
 
   update(): void {
@@ -72,5 +85,8 @@ export class DebugHUD {
     this.xpText.setText(
       `XP: ${this.player.getCurrentXp()}/${this.player.getXpToNextLevel()}`,
     );
+
+    this.damageText.setText(`Damage: ${this.player.getWeaponDamage()}`);
+    this.speedText.setText(`Speed: ${this.player.getSpeed()}`);
   }
 }

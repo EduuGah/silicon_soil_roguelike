@@ -10,6 +10,8 @@ export class Player extends Entity {
   private readonly teclaW: Input.Keyboard.Key;
   private readonly teclaS: Input.Keyboard.Key;
 
+  private readonly teclaU: Input.Keyboard.Key;
+
   private level = 1;
   private currentXp = 0;
   private xpToNextLevel = 100;
@@ -42,6 +44,8 @@ export class Player extends Entity {
     );
     this.teclaF = scene.input.keyboard.addKey(Input.Keyboard.KeyCodes.F);
 
+    this.teclaU = scene.input.keyboard.addKey(Input.Keyboard.KeyCodes.U);
+
     this.weapon = new BasicWeapon(scene);
   }
 
@@ -58,6 +62,12 @@ export class Player extends Entity {
     if (directionX !== 0 && directionY !== 0) {
       directionX *= this.diagonalMultiplier;
       directionY *= this.diagonalMultiplier;
+    }
+
+    if (Input.Keyboard.JustDown(this.teclaU)) {
+      this.increaseWeaponDamage(10);
+      this.increaseMaxHealth(10);
+      this.increaseSpeed(10);
     }
 
     const deltaSeconds = delta / 1000;
@@ -150,21 +160,28 @@ export class Player extends Entity {
     );
   }
 
-  gainXp(amount: number): void {
+  gainXp(amount: number): number {
     if (amount <= 0) {
-      return;
+      return 0;
     }
 
     this.currentXp += amount;
-    this.checkLevelUp();
+
+    return this.checkLevelUp();
   }
 
-  private checkLevelUp(): void {
+  private checkLevelUp(): number {
+    let levelsGained = 0;
+
     while (this.currentXp >= this.xpToNextLevel) {
       this.currentXp -= this.xpToNextLevel;
       this.level++;
       this.xpToNextLevel = Math.floor(this.xpToNextLevel * 1.25);
+
+      levelsGained++;
     }
+
+    return levelsGained;
   }
 
   getLevel(): number {
@@ -177,5 +194,34 @@ export class Player extends Entity {
 
   getXpToNextLevel(): number {
     return this.xpToNextLevel;
+  }
+
+  getSpeed(): number {
+    return this.speed;
+  }
+
+  getWeaponDamage(): number {
+    return this.weapon.getDamage();
+  }
+
+  increaseSpeed(amount: number): void {
+    if (amount <= 0) {
+      return;
+    }
+
+    this.speed += amount;
+  }
+
+  increaseMaxHealth(amount: number): void {
+    if (amount <= 0) {
+      return;
+    }
+
+    this.maxHealth += amount;
+    this.health += amount;
+  }
+
+  increaseWeaponDamage(amount: number): void {
+    this.weapon.increaseDamage(amount);
   }
 }

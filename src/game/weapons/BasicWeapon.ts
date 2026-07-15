@@ -4,7 +4,7 @@ import { Weapon } from "./Weapon";
 
 export class BasicWeapon extends Weapon {
   constructor(scene: Scene) {
-    super(scene, 10, 300, 600, 700);
+    super(scene, 10, 30, 600, 700);
   }
 
   shoot(
@@ -32,5 +32,17 @@ export class BasicWeapon extends Weapon {
       this.damage,
       this.range,
     );
+  }
+
+  getDamage(): number {
+    return this.damage;
+  }
+
+  increaseDamage(amount: number): void {
+    if (amount <= 0) {
+      return;
+    }
+
+    this.damage += amount;
   }
 }

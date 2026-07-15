@@ -6,10 +6,10 @@ export abstract class Weapon {
 
   constructor(
     protected readonly scene: Scene,
-    protected readonly damage: number,
-    protected readonly cooldown: number,
-    protected readonly projectileSpeed: number,
-    protected readonly range: number,
+    protected damage: number,
+    protected cooldown: number,
+    protected projectileSpeed: number,
+    protected range: number,
   ) {}
 
   abstract shoot(
